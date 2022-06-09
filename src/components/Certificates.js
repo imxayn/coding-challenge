@@ -15,6 +15,7 @@ import * as React from 'react';
 import ImageList from '@mui/material/ImageList';
 import ImageListItem from '@mui/material/ImageListItem';
 
+const TOKEN = 'http://ec2-15-185-42-200.me-south-1.compute.amazonaws.com:8080/gigshack-api-0.0.1/authenticate'
 const API_URL='http://ec2-15-185-42-200.me-south-1.compute.amazonaws.com:8080/gigshack-api-0.0.1/profile/user/get?requestedUserId=b57cd2f4-069b-43c3-8259-72f9601e6e15'
 const itemData = [
   {
@@ -32,8 +33,24 @@ const itemData = [
 ];
 const Certificates = () => {
     const [data,setData] = useState()
+    const [loading, setLoading] = useState(true)
     const theme = useTheme();
-    useJwttoken();
+   
+    useEffect(() => {
+      const fetchAuthToken = async () => {
+        const result = await axios.post(
+          TOKEN,
+          {
+              "password": "passmein",
+              "username": "web"
+          }
+        );
+        //setData(result.data);
+        document.cookie = `jwttoken=${result.data.jwttoken}`;
+      };
+
+      fetchAuthToken();
+    }, []);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -48,9 +65,10 @@ const Certificates = () => {
               }
             );           
             setData(result.data.certificates)
+            setLoading(false)
           };    
           fetchData();      
-      }, [])
+      }, [loading])
  
     return(
       <>
@@ -62,12 +80,15 @@ const Certificates = () => {
             </Box>
         </Toolbar>
       </AppBar>
+      <Box display="flex" justifyContent="center">
       <Button variant="outlined" sx={{marginTop: 4}} onClick={()=>{}}>
         <AddIcon fontSize="small"/>
           ADD NEW CERTIFICATE
       </Button>
+      </Box>
+     
       <Box display="flex"  ml={2} mb={6}  component="p">Certificates You have added</Box>
-
+      {loading && 'loading...'}
       {data?.length>0 && data?.map((certificate,id)=>{
           return(
             <Box ml={2} key={id} mt={2} display="flex" flexDirection="column">     
