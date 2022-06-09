@@ -34,23 +34,8 @@ const itemData = [
 const Certificates = () => {
     const [data,setData] = useState()
     const [loading, setLoading] = useState(true)
-    const theme = useTheme();
    
-    useEffect(() => {
-      const fetchAuthToken = async () => {
-        const result = await axios.post(
-          TOKEN,
-          {
-              "password": "passmein",
-              "username": "web"
-          }
-        );
-        //setData(result.data);
-        document.cookie = `jwttoken=${result.data.jwttoken}`;
-      };
-
-      fetchAuthToken();
-    }, []);
+    useJwttoken();
 
     useEffect(() => {
         const fetchData = async () => {
